@@ -90,6 +90,7 @@ main, footer { position: relative; z-index: 2; }
 .nav ul { display: flex; gap: 8px; list-style: none; margin: 0; padding: 0; }
 .nav ul a { display: block; padding: 6px 16px; font-family: var(--f-deco); font-size: 18px; text-decoration: none; background: var(--paper); border: 3px solid var(--ink); border-radius: 999px; box-shadow: 3px 3px 0 var(--ink); transition: background-color .15s; }
 .nav ul a:hover { background: var(--yellow); }
+.nav ul a[aria-current="page"] { background: var(--yellow); }
 .sound-btn { width: 44px; height: 44px; padding: 0; display: grid; place-items: center; background: var(--paper); border: 3px solid var(--ink); border-radius: 50%; box-shadow: 3px 3px 0 var(--ink); transition: background-color .15s, transform .1s steps(2), box-shadow .1s steps(2); }
 .sound-btn:hover { background: var(--yellow); }
 .sound-btn:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--ink); }
@@ -97,7 +98,7 @@ main, footer { position: relative; z-index: 2; }
 .sound-btn[aria-pressed="false"] .on { display: none; }
 .sound-btn[aria-pressed="false"] .off { display: inline; }
 @media (max-width: 560px) { .sound-btn { width: 38px; height: 38px; } }
-@media (max-width: 480px) { .logo { display: none; } .nav .wrap { justify-content: flex-end; } }
+@media (max-width: 480px) { .logo { display: none; } .nav .wrap { justify-content: flex-end; } .nav ul { gap: 4px; flex-wrap: wrap; justify-content: flex-end; } .nav ul a { padding: 5px 9px; } }
 @media (max-width: 560px) { .logo { font-size: 20px; padding: 2px 12px 3px; } .nav ul { gap: 5px; } .nav ul a { padding: 5px 10px; font-size: 15px; } }
 .reel-tag { position: fixed; z-index: 9; left: max(20px, env(safe-area-inset-left, 0px)); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); display: flex; align-items: center; gap: 10px; background: var(--ink); color: var(--paper); border-radius: 999px; padding: 6px 16px 6px 6px; font-family: var(--f-deco); font-size: 17px; }
 .reel-tag svg { animation: none; }
@@ -132,6 +133,7 @@ main, footer { position: relative; z-index: 2; }
 
 /* 2. Work: three film strips */
 .work { position: relative; }
+[data-page="personal"] .work { min-height: calc(100svh - 80px); }
 .pin { padding-block: 120px 15vh; }
 .work-top { display: flex; align-items: center; justify-content: space-between; gap: 12px 24px; flex-wrap: wrap; margin-bottom: 16px; }
 .sec-title { font-family: var(--f-title); font-size: clamp(52px, 6.4vw, 96px); line-height: 1; color: var(--yellow); -webkit-text-stroke: 4px var(--ink); paint-order: stroke fill; text-shadow: 5px 5px 0 var(--ink); }
@@ -214,7 +216,7 @@ main, footer { position: relative; z-index: 2; }
 .roll > span { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
 @media (max-width: 520px) { .ticket { padding: 18px 26px 22px; } .ticket-head b { font-size: 22px; } }
 
-footer .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding-block: 18px 30px; font-size: 16px; border-top: 4px solid var(--ink); }
+footer .wrap { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding-block: 18px 84px; font-size: 16px; border-top: 4px solid var(--ink); }
 
 /* dialog */
 dialog { border: 0; padding: 0; background: transparent; color: var(--ink); overflow: visible; width: min(1280px, calc(100vw - 190px)); max-width: none; max-height: none; }
@@ -263,6 +265,7 @@ dialog::backdrop { background: rgba(26,23,20,.7); }
     <a class="logo" href="#title">Yuna Tang</a>
     <ul>
       <li><a href="#work">Work</a></li>
+      <li><a href="personal.html">Personal</a></li>
       <li><a href="#about">About</a></li>
       <li><a href="#contact">Contact</a></li>
       <li><button class="sound-btn" type="button" id="sound-btn" aria-pressed="true" aria-label="Sound effects" title="Sound on/off"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9h4l5-4v14l-5-4H3z" fill="#1A1714" stroke="#1A1714" stroke-width="1.5" stroke-linejoin="round"/><g class="on" fill="none" stroke="#1A1714" stroke-width="2.2" stroke-linecap="round"><path d="M15.5 9.2a4 4 0 0 1 0 5.6"/><path d="M18.3 6.6a7.6 7.6 0 0 1 0 10.8"/></g><g class="off" stroke="#1A1714" stroke-width="2.4" stroke-linecap="round"><path d="M16 9.5l5 5M21 9.5l-5 5"/></g></svg></button></li>
@@ -324,6 +327,7 @@ dialog::backdrop { background: rgba(26,23,20,.7); }
 </div>
 
 <main>
+  <!-- home-only:start -->
   <!-- Reel 1: title card -->
   <section class="hero" id="title" data-reel="1">
     <div class="hero-pin">
@@ -339,6 +343,7 @@ dialog::backdrop { background: rgba(26,23,20,.7); }
     </div>
   </section>
 
+  <!-- home-only:end -->
   <!-- Reel 2: work -->
   <section class="work" id="work" data-reel="2">
     <div class="pin">
@@ -352,6 +357,7 @@ dialog::backdrop { background: rgba(26,23,20,.7); }
     </div>
   </section>
 
+  <!-- home-only:start -->
   <!-- Reel 3: credits -->
   <section class="about" id="about" data-reel="3">
     <div class="wrap">
@@ -402,6 +408,7 @@ dialog::backdrop { background: rgba(26,23,20,.7); }
       </div>
     </div>
   </section>
+  <!-- home-only:end -->
 </main>
 
 <footer><div class="wrap mono"><span>© 2026 Yuna Tang</span><span>Hong Kong</span></div></footer>
@@ -560,7 +567,7 @@ dialog::backdrop { background: rgba(26,23,20,.7); }
 
   /* ---------- Bouncing title letters ---------- */
   const tt = $('title-text');
-  tt.innerHTML = tt.textContent.trim().split(/\s+/).map(w => `<span class="w">${[...w].map(ch => `<span class="l" aria-hidden="true">${ch}</span>`).join('')}</span>`).join(' ');
+  if (tt) tt.innerHTML = tt.textContent.trim().split(/\s+/).map(w => `<span class="w">${[...w].map(ch => `<span class="l" aria-hidden="true">${ch}</span>`).join('')}</span>`).join(' ');
 
   /* ---------- Film grain tile ---------- */
   (function () {
@@ -573,7 +580,8 @@ dialog::backdrop { background: rgba(26,23,20,.7); }
 
   /* ---------- Work data ---------- */
   // from work-data.js: cover = [src, w, h]; media = images [src, w, h] or videos {type, src, w, h, poster}
-  const WORK = window.WORK || [];
+  const PAGE = document.documentElement.dataset.page || 'home';   // personal.html sets data-page="personal"
+  const WORK = (PAGE === 'personal' ? window.PERSONAL : window.WORK) || [];
   const TAGS = { all: 'All', animation: 'Animation', video: 'Video', design: 'Design', illustration: 'Illustration', coding: 'Coding' };
   const rows = [...document.querySelectorAll('.row')];
   const playIcon = '<svg width="14" height="14" viewBox="0 0 18 18" aria-hidden="true"><path d="M5 3 L15 9 L5 15Z" fill="#1A1714"/></svg>';
@@ -586,7 +594,7 @@ dialog::backdrop { background: rgba(26,23,20,.7); }
     const list = WORK.filter(w => tag === 'all' || w.tag === tag);
     // split the list into up to three rows of near-equal length, in order
     // same grid as "All" for every filter: fixed columns, rows filled in order
-    const cols = Math.max(1, Math.ceil(WORK.length / 3));
+    const cols = Math.max(5, Math.ceil(WORK.length / 3));   // same thumbnail size on every page and filter
     $('rows').style.setProperty('--cols', cols);
     const nRows = Math.max(1, Math.ceil(list.length / cols));
     const rowOf = list.map((_, n) => Math.floor(n / cols));
@@ -716,7 +724,7 @@ dialog::backdrop { background: rgba(26,23,20,.7); }
     nu.animate([{ transform: 'translateY(100%)' }, { transform: 'none' }], o);
     if (old) old.animate([{ transform: 'none' }, { transform: 'translateY(-100%)' }], o).onfinish = () => old.remove();
   }
-  $('copy-email').addEventListener('click', () => {
+  $('copy-email') && $('copy-email').addEventListener('click', () => {
     const el = $('email');
     const fallback = () => { const r = document.createRange(); r.selectNodeContents(el); const s = getSelection(); s.removeAllRanges(); s.addRange(r); };
     try { navigator.clipboard.writeText(el.textContent).then(() => { roll($('copy-roll'), 'Copied'); sfx.ding(); setTimeout(() => roll($('copy-roll'), 'Copy'), 1800); }, fallback); } catch (e) { fallback(); }
@@ -793,7 +801,7 @@ dialog::backdrop { background: rgba(26,23,20,.7); }
 
   /* ---------- Scenes ---------- */
   const S = { title: $('title'), work: workSec, about: $('about'), contact: $('contact') };
-  const order = ['title', 'work', 'about', 'contact'];
+  const order = ['title', 'work', 'about', 'contact'].filter(k => S[k]);
   const credits = [...document.querySelectorAll('.cr, .credits .chips')];
   const iris = $('iris'), rings = $('rings'), flick = $('flicker'), grain = $('grain'), turb = $('boil-t');
   const eyeL = $('eyeL'), pupils = $('eyes'), bodybob = $('bodybob');
@@ -806,7 +814,7 @@ dialog::backdrop { background: rgba(26,23,20,.7); }
     const top = el.offsetTop, h = el.offsetHeight, vh = innerHeight;
     return pinned ? clamp((scrollY - top) / Math.max(1, h - vh)) : clamp((scrollY - top + vh) / (h + vh));
   };
-  const activeSection = () => { let a = 'title'; for (const k of order) if (S[k].offsetTop <= scrollY + innerHeight * 0.5) a = k; return a; };
+  const activeSection = () => { let a = order[0]; for (const k of order) if (S[k].offsetTop <= scrollY + innerHeight * 0.5) a = k; return a; };
 
   function target(active) {
     const w = innerWidth, h = innerHeight, mob = w < 720;
@@ -846,10 +854,10 @@ dialog::backdrop { background: rgba(26,23,20,.7); }
     octo.style.transform = `translate(${(pos.x - OW / 2).toFixed(1)}px, ${(pos.y - OH / 2).toFixed(1)}px) scale(${pos.s.toFixed(3)}) rotate(${pos.r.toFixed(1)}deg)`;
 
     // iris out around the octopus, then iris in on the work reel
-    const heroEnd = S.title.offsetTop + S.title.offsetHeight - vh;
+    const heroEnd = S.title ? S.title.offsetTop + S.title.offsetHeight - vh : 0;
     const R = Math.hypot(vw, vh);
     let r, cx = pos.x, cy = pos.y - 30 * pos.s;
-    if (vw < 720) {
+    if (vw < 720 || !S.title) {
       r = R + 10;   // phones: no iris blackout
     } else if (scrollY <= heroEnd) {
       const hp = localP(S.title, true);
@@ -872,9 +880,9 @@ dialog::backdrop { background: rgba(26,23,20,.7); }
     });
 
     // "The End" rings spin up
-    const cp = localP(S.contact, false);
+    const cp = S.contact ? localP(S.contact, false) : 0;
     const rv = smooth(clamp((cp - 0.1) / 0.4));
-    rings.style.transform = `scale(${lerp(.4, 1, rv).toFixed(3)}) rotate(${lerp(-90, 0, rv).toFixed(1)}deg)`;
+    if (rings) rings.style.transform = `scale(${lerp(.4, 1, rv).toFixed(3)}) rotate(${lerp(-90, 0, rv).toFixed(1)}deg)`;
 
     // on twos: character, line boil, grain, flicker
     if (newTick && !reduce) {
