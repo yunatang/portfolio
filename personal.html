@@ -141,6 +141,26 @@ main, footer { position: relative; z-index: 2; }
 .g-item { margin: 0; border: 4px solid var(--ink); border-radius: 16px; overflow: hidden; background: var(--card); box-shadow: 5px 5px 0 var(--ink); transition: transform .3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow .3s cubic-bezier(0.25, 0.8, 0.25, 1); }
 .g-item img, .g-item video { display: block; width: 100%; height: auto; }
 .g-item:hover { transform: translate(-3px, -4px); box-shadow: 9px 10px 0 var(--ink); }
+.g-btn { all: unset; box-sizing: border-box; display: block; position: relative; width: 100%; }
+.g-btn:focus-visible { outline: 4px solid var(--orange); outline-offset: -4px; }
+.g-btn img { display: block; width: 100%; height: auto; }
+.g-btn .vid { position: absolute; right: 10px; top: 10px; width: 42px; height: 42px; border-radius: 50%; background: var(--orange); border: 3px solid var(--ink); display: grid; place-items: center; }
+/* lightbox for Personal Work */
+dialog.lb { width: 100vw; height: 100svh; max-width: none; max-height: none; margin: 0; padding: 0; border: 0; background: transparent; overflow: hidden; }
+dialog.lb[open] { display: grid; place-items: center; }
+dialog.lb::backdrop { background: rgba(26,23,20,.9); }
+.lb-stage { margin: 0; display: grid; place-items: center; }
+.lb-stage img, .lb-stage video { display: block; width: auto; height: auto; max-width: calc(100vw - 220px); max-height: calc(100svh - 130px); border: 5px solid var(--ink); border-radius: 16px; background: var(--card); box-shadow: 0 24px 60px rgba(0,0,0,.55); }
+.lb .proj-btn.prev { left: 28px; } .lb .proj-btn.next { right: 28px; }
+.lb-close { position: absolute; top: 20px; right: 24px; z-index: 2; width: 52px; height: 52px; border: 4px solid var(--ink); border-radius: 50%; background: var(--card); box-shadow: 4px 4px 0 var(--ink); display: grid; place-items: center; }
+.lb-close:hover { background: var(--yellow); }
+.lb-count { position: absolute; left: 50%; bottom: 22px; translate: -50% 0; color: var(--card); font-size: 17px; }
+@media (max-width: 720px) {
+  .lb-stage img, .lb-stage video { max-width: calc(100vw - 24px); max-height: calc(100svh - 170px); border-width: 3px; border-radius: 12px; }
+  .lb .proj-btn { top: auto; bottom: 18px; } .lb .proj-btn.prev { left: 16px; } .lb .proj-btn.next { right: 16px; }
+  .lb-close { top: 14px; right: 14px; width: 46px; height: 46px; border-width: 3px; }
+  .lb-count { bottom: 34px; }
+}
 @media (max-width: 720px) { .gallery, .g-col { gap: 12px; } .g-item { border-width: 3px; border-radius: 12px; box-shadow: 3px 3px 0 var(--ink); } }
 .pin { padding-block: 120px 15vh; }
 .work-top { display: flex; align-items: center; justify-content: space-between; gap: 12px 24px; flex-wrap: wrap; margin-bottom: 16px; }
@@ -373,6 +393,14 @@ dialog::backdrop { background: rgba(26,23,20,.7); }
   <button class="proj-btn next" type="button" id="proj-next" aria-label="Next project"><svg width="26" height="26" viewBox="0 0 20 20" aria-hidden="true"><path d="M7 3 L14.5 10 L7 17" fill="none" stroke="#1A1714" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 </dialog>
 
+<dialog id="lb" class="lb" aria-label="Artwork viewer">
+  <button class="proj-btn prev" type="button" id="lb-prev" aria-label="Previous piece"><svg width="26" height="26" viewBox="0 0 20 20" aria-hidden="true"><path d="M13 3 L5.5 10 L13 17" fill="none" stroke="#1A1714" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  <figure class="lb-stage" id="lb-stage"></figure>
+  <button class="proj-btn next" type="button" id="lb-next" aria-label="Next piece"><svg width="26" height="26" viewBox="0 0 20 20" aria-hidden="true"><path d="M7 3 L14.5 10 L7 17" fill="none" stroke="#1A1714" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+  <button class="lb-close" type="button" id="lb-close" aria-label="Close"><svg width="18" height="18" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 3l10 10M13 3L3 13" stroke="#1A1714" stroke-width="2.8" stroke-linecap="round"/></svg></button>
+  <span class="lb-count mono" id="lb-count"></span>
+</dialog>
+
 <script src="personal-data.js"></script>
 <script>
 (function () {
@@ -461,7 +489,7 @@ dialog::backdrop { background: rgba(26,23,20,.7); }
   // click sounds; specific controls make their own sound elsewhere
   addEventListener('click', e => {
     const el = e.target.closest(CLICKABLE); if (!el || el.disabled) return;
-    if (el.matches('#sound-btn, .panel, .filter, .proj-btn, .nav-btn, .dot, #dlg-close, #copy-email')) return;
+    if (el.matches('#sound-btn, .panel, .filter, .proj-btn, .nav-btn, .dot, #dlg-close, #copy-email, .g-btn, #lb-close')) return;
     sfx.pop();
   });
 
@@ -533,7 +561,45 @@ dialog::backdrop { background: rgba(26,23,20,.7); }
 
   function sizeWork() {}
   // masonry that reads left to right: each piece goes into the currently shortest column, in date order
-  let galleryItems = [], galleryCols = 0;
+  let galleryItems = [], galleryCols = 0, galleryOrder = [];
+  /* lightbox: one piece at a time, arrows move through the gallery in its current order */
+  const lb = $('lb'), lbStage = $('lb-stage');
+  let lbIdx = 0;
+  function showPiece(k, dir) {
+    const N = galleryOrder.length; if (!N) return;
+    lbIdx = (k + N) % N;
+    const { w, m } = galleryOrder[lbIdx];
+    lbStage.querySelectorAll('video').forEach(v => v.pause());
+    lbStage.innerHTML = m.type === 'video'
+      ? `<video src="${m.src}" poster="${m.poster}" width="${m.w}" height="${m.h}" controls autoplay playsinline aria-label="${w.t}"></video>`
+      : `<img src="${m[0]}" width="${m[1]}" height="${m[2]}" alt="${w.t}">`;
+    $('lb-count').textContent = (lbIdx + 1) + ' / ' + N;
+    $('lb-prev').hidden = $('lb-next').hidden = N < 2;
+    // warm the neighbours so arrowing feels instant
+    [lbIdx + 1, lbIdx - 1].forEach(j => { const p = galleryOrder[(j + N) % N].m; if (p.type !== 'video') new Image().src = p[0]; });
+    if (dir && !reduce) lbStage.animate([{ transform: `translateX(${dir * 40}px)`, opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 260, easing: 'cubic-bezier(0.25, 0.8, 0.25, 1)' });
+  }
+  function openLightbox(k) {
+    showPiece(k, 0);
+    lb.showModal ? lb.showModal() : lb.setAttribute('open', '');
+    sfx.open();
+    if (!reduce) lbStage.animate([{ transform: 'scale(.92)', opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 300, easing: 'cubic-bezier(0.25, 0.8, 0.25, 1)' });
+  }
+  const lbStep = d => { sfx.swoosh(); showPiece(lbIdx + d, d); };
+  $('gallery').addEventListener('click', e => { const b = e.target.closest('.g-btn'); if (b) openLightbox(+b.dataset.k); });
+  $('lb-prev').addEventListener('click', () => lbStep(-1));
+  $('lb-next').addEventListener('click', () => lbStep(1));
+  $('lb-close').addEventListener('click', () => lb.close());
+  lb.addEventListener('click', e => { if (e.target === lb || e.target === lbStage) lb.close(); });
+  lb.addEventListener('close', () => { lbStage.querySelectorAll('video').forEach(v => v.pause()); sfx.close(); });
+  lb.addEventListener('keydown', e => {
+    if (e.target.tagName === 'VIDEO') return;
+    if (e.key === 'ArrowRight') { e.preventDefault(); lbStep(1); }
+    if (e.key === 'ArrowLeft') { e.preventDefault(); lbStep(-1); }
+  });
+  let touchX = null;   // swipe on phones
+  lb.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; }, { passive: true });
+  lb.addEventListener('touchend', e => { if (touchX === null) return; const dx = e.changedTouches[0].clientX - touchX; touchX = null; if (Math.abs(dx) > 50) lbStep(dx < 0 ? 1 : -1); });
   const colCount = () => innerWidth >= 1100 ? 4 : innerWidth >= 720 ? 3 : 2;
   function layoutGallery() {
     const g = $('gallery'), n = colCount(); galleryCols = n;
@@ -557,13 +623,14 @@ dialog::backdrop { background: rgba(26,23,20,.7); }
     pieces.sort((a, b) => (b.d > a.d) - (b.d < a.d) || a.i - b.i);
     galleryItems = [];
     let n = 0;
-    pieces.forEach(({ w, m }) => {
+    galleryOrder = pieces;
+    pieces.forEach(({ w, m }, k) => {
       const f = document.createElement('figure');
       f.dataset.r = m.type === 'video' ? m.h / m.w : m[2] / m[1];   // height per unit width
       f.className = 'g-item';
-      f.innerHTML = m.type === 'video'
-        ? `<video src="${m.src}" poster="${m.poster}" width="${m.w}" height="${m.h}" controls playsinline preload="none" aria-label="${w.t}"></video>`
-        : `<img src="${m[0]}" width="${m[1]}" height="${m[2]}" alt="${w.t}" loading="lazy" decoding="async">`;
+      f.innerHTML = `<button class="g-btn" type="button" data-k="${k}" aria-label="${w.t}, view larger">` + (m.type === 'video'
+        ? `<img src="${m.poster}" width="${m.w}" height="${m.h}" alt="" loading="lazy" decoding="async"><span class="vid" aria-hidden="true">${playIcon}</span>`
+        : `<img src="${m[0]}" width="${m[1]}" height="${m[2]}" alt="" loading="lazy" decoding="async">`) + '</button>';
       galleryItems.push(f);
       if (animateIn && !reduce && n < 16) f.animate([{ opacity: 0, transform: 'translateY(16px) scale(.96)' }, { opacity: 1, transform: 'none' }],
         { duration: 420, delay: n * 40, easing: 'cubic-bezier(0.25, 0.8, 0.25, 1)', fill: 'backwards' });
