@@ -89,6 +89,13 @@ main, footer { position: relative; z-index: 2; }
 .nav ul { display: flex; gap: 8px; list-style: none; margin: 0; padding: 0; }
 .nav ul a { display: block; padding: 6px 16px; font-family: var(--f-deco); font-size: 18px; text-decoration: none; background: var(--paper); border: 3px solid var(--ink); border-radius: 999px; box-shadow: 3px 3px 0 var(--ink); transition: background-color .15s; }
 .nav ul a:hover { background: var(--yellow); }
+.sound-btn { width: 44px; height: 44px; padding: 0; display: grid; place-items: center; background: var(--paper); border: 3px solid var(--ink); border-radius: 50%; box-shadow: 3px 3px 0 var(--ink); transition: background-color .15s, transform .1s steps(2), box-shadow .1s steps(2); }
+.sound-btn:hover { background: var(--yellow); }
+.sound-btn:active { transform: translate(3px, 3px); box-shadow: 0 0 0 var(--ink); }
+.sound-btn .off { display: none; }
+.sound-btn[aria-pressed="false"] .on { display: none; }
+.sound-btn[aria-pressed="false"] .off { display: inline; }
+@media (max-width: 560px) { .sound-btn { width: 38px; height: 38px; } }
 @media (max-width: 560px) { .logo { font-size: 20px; padding: 2px 12px 3px; } .nav ul { gap: 5px; } .nav ul a { padding: 5px 10px; font-size: 15px; } }
 .reel-tag { position: fixed; z-index: 9; left: max(20px, env(safe-area-inset-left, 0px)); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); display: flex; align-items: center; gap: 10px; background: var(--ink); color: var(--paper); border-radius: 999px; padding: 6px 16px 6px 6px; font-family: var(--f-deco); font-size: 17px; }
 .reel-tag svg { animation: none; }
@@ -250,6 +257,7 @@ dialog::backdrop { background: rgba(26,23,20,.7); }
       <li><a href="#work">Work</a></li>
       <li><a href="#about">About</a></li>
       <li><a href="#contact">Contact</a></li>
+      <li><button class="sound-btn" type="button" id="sound-btn" aria-pressed="true" aria-label="Sound effects" title="Sound on/off"><svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 9h4l5-4v14l-5-4H3z" fill="#1A1714" stroke="#1A1714" stroke-width="1.5" stroke-linejoin="round"/><g class="on" fill="none" stroke="#1A1714" stroke-width="2.2" stroke-linecap="round"><path d="M15.5 9.2a4 4 0 0 1 0 5.6"/><path d="M18.3 6.6a7.6 7.6 0 0 1 0 10.8"/></g><g class="off" stroke="#1A1714" stroke-width="2.4" stroke-linecap="round"><path d="M16 9.5l5 5M21 9.5l-5 5"/></g></svg></button></li>
     </ul>
   </div>
 </header>
@@ -429,6 +437,78 @@ dialog::backdrop { background: rgba(26,23,20,.7); }
     addEventListener('pointerup', release); addEventListener('pointercancel', release); addEventListener('blur', release);
   })();
 
+  /* ---------- Cartoon sound effects (generated in code, no audio files) ---------- */
+  const sfx = (function () {
+    let ctx = null, master = null, noise = null;
+    let on = true;
+    try { on = localStorage.getItem('yt-sound') !== 'off'; } catch (e) {}
+    const btn = $('sound-btn');
+    const sync = () => btn.setAttribute('aria-pressed', on);
+    sync();
+    function ready() {   // browsers allow audio only after a click/tap/key press
+      if (!ctx) {
+        const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return null;
+        ctx = new AC(); master = ctx.createGain(); master.gain.value = .5; master.connect(ctx.destination);
+        noise = ctx.createBuffer(1, ctx.sampleRate * .5, ctx.sampleRate);
+        const d = noise.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      }
+      if (ctx.state === 'suspended') ctx.resume();
+      return ctx;
+    }
+    const unlock = () => { ready(); };
+    addEventListener('pointerdown', unlock, { capture: true }); addEventListener('keydown', unlock, { capture: true });
+    function tone({ type = 'sine', f0, f1 = f0, dur = .12, vol = .2, delay = 0, curve = 'exp', vib = 0, vibRate = 0 }) {
+      if (!on || !ready() || ctx.state !== 'running') return;
+      const t = ctx.currentTime + delay, o = ctx.createOscillator(), g = ctx.createGain();
+      o.type = type; o.frequency.setValueAtTime(f0, t);
+      curve === 'exp' ? o.frequency.exponentialRampToValueAtTime(f1, t + dur) : o.frequency.linearRampToValueAtTime(f1, t + dur);
+      if (vib) { const l = ctx.createOscillator(), lg = ctx.createGain(); l.frequency.value = vibRate; lg.gain.value = vib; l.connect(lg).connect(o.frequency); l.start(t); l.stop(t + dur); }
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .008); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+      o.connect(g).connect(master); o.start(t); o.stop(t + dur + .02);
+    }
+    function hiss({ f0, f1, dur = .25, vol = .2, q = 4 }) {
+      if (!on || !ready() || ctx.state !== 'running') return;
+      const t = ctx.currentTime, src = ctx.createBufferSource(), bp = ctx.createBiquadFilter(), g = ctx.createGain();
+      src.buffer = noise; bp.type = 'bandpass'; bp.Q.value = q;
+      bp.frequency.setValueAtTime(f0, t); bp.frequency.exponentialRampToValueAtTime(f1, t + dur);
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + dur * .3); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+      src.connect(bp).connect(g).connect(master); src.start(t); src.stop(t + dur + .02);
+    }
+    const S = {
+      hover: () => tone({ f0: 1100, f1: 1600, dur: .05, vol: .05 }),
+      pop: () => { tone({ type: 'triangle', f0: 760, f1: 180, dur: .09, vol: .22 }); tone({ f0: 1500, f1: 900, dur: .04, vol: .06 }); },
+      boing: () => tone({ type: 'triangle', f0: 170, f1: 420, dur: .32, vol: .2, curve: 'lin', vib: 40, vibRate: 22 }),
+      open: () => tone({ type: 'sine', f0: 320, f1: 1250, dur: .32, vol: .16, vib: 14, vibRate: 9 }),
+      close: () => tone({ type: 'sine', f0: 1150, f1: 300, dur: .28, vol: .14, vib: 14, vibRate: 9 }),
+      swoosh: () => hiss({ f0: 500, f1: 3200, dur: .22, vol: .35, q: 3 }),
+      flick: () => hiss({ f0: 1400, f1: 3400, dur: .1, vol: .2, q: 6 }),
+      ding: () => { tone({ f0: 1320, dur: .25, vol: .12 }); tone({ f0: 1760, dur: .35, vol: .12, delay: .09 }); },
+      blub: () => { tone({ f0: 260, f1: 620, dur: .12, vol: .22 }); tone({ f0: 340, f1: 820, dur: .12, vol: .18, delay: .1 }); tone({ f0: 420, f1: 1000, dur: .14, vol: .14, delay: .2 }); },
+    };
+    btn.addEventListener('click', () => {
+      on = !on; sync();
+      try { localStorage.setItem('yt-sound', on ? 'on' : 'off'); } catch (e) {}
+      if (on) S.ding();
+    });
+    return S;
+  })();
+
+  // hover tick when the mouse moves onto a new clickable thing
+  const CLICKABLE = 'a[href], button, [role="button"], .panel, summary, label';
+  let hoverEl = null;
+  addEventListener('pointerover', e => {
+    if (e.pointerType !== 'mouse') return;
+    const el = e.target.closest(CLICKABLE);
+    if (el && el !== hoverEl && !el.disabled && el.id !== 'sound-btn') sfx.hover();
+    hoverEl = el;
+  });
+  // click sounds; specific controls make their own sound elsewhere
+  addEventListener('click', e => {
+    const el = e.target.closest(CLICKABLE); if (!el || el.disabled) return;
+    if (el.matches('#sound-btn, .panel, .filter, .proj-btn, .nav-btn, .dot, #dlg-close, #copy-email')) return;
+    sfx.pop();
+  });
+
   const TICK = 1000 / 12;          // animate "on twos"
   const BEAT = 500;                // 120 BPM
 
@@ -487,6 +567,7 @@ dialog::backdrop { background: rgba(26,23,20,.7); }
     return `<button class="filter" type="button" id="f-${k}" data-k="${k}" aria-pressed="${k === 'all'}">${l}<span class="n">${n}</span></button>`;
   }).join('');
   filters.addEventListener('click', e => {
+    if (e.target.closest('.filter')) sfx.boing();
     const b = e.target.closest('.filter'); if (!b || b.dataset.k === currentTag) return;
     filters.querySelectorAll('.filter').forEach(x => x.setAttribute('aria-pressed', x === b));
     render(b.dataset.k, true);
@@ -502,6 +583,7 @@ dialog::backdrop { background: rgba(26,23,20,.7); }
     openProject(shown.findIndex(x => x.id === c.dataset.id), 0);
   });
   function openProject(i, dir) {
+    dlg.open ? (dir && sfx.swoosh()) : sfx.open();
     curProj = (i + shown.length) % shown.length;
     const w = shown[curProj];
     dlg.querySelectorAll('video').forEach(v => v.pause());
@@ -529,7 +611,7 @@ dialog::backdrop { background: rgba(26,23,20,.7); }
   $('proj-prev').addEventListener('click', () => openProject(curProj - 1, -1));
   $('proj-next').addEventListener('click', () => openProject(curProj + 1, 1));
   $('dlg-close').addEventListener('click', () => dlg.close());
-  dlg.addEventListener('close', () => dlg.querySelectorAll('video').forEach(v => v.pause()));
+  dlg.addEventListener('close', () => { dlg.querySelectorAll('video').forEach(v => v.pause()); sfx.close(); });
 
   /* horizontal image viewer */
   const strip = $('dlg-imgs');
@@ -549,6 +631,7 @@ dialog::backdrop { background: rgba(26,23,20,.7); }
     return best;
   }
   function goTo(i) {
+    sfx.flick();
     strip.querySelectorAll('video').forEach(v => v.pause());
     const f = figs()[Math.max(0, Math.min(figs().length - 1, i))]; if (!f) return;
     strip.scrollTo({ left: f.offsetLeft - (strip.clientWidth - f.offsetWidth) / 2, behavior: reduce ? 'auto' : 'smooth' });
@@ -590,7 +673,7 @@ dialog::backdrop { background: rgba(26,23,20,.7); }
   $('copy-email').addEventListener('click', () => {
     const el = $('email');
     const fallback = () => { const r = document.createRange(); r.selectNodeContents(el); const s = getSelection(); s.removeAllRanges(); s.addRange(r); };
-    try { navigator.clipboard.writeText(el.textContent).then(() => { roll($('copy-roll'), 'Copied'); setTimeout(() => roll($('copy-roll'), 'Copy'), 1800); }, fallback); } catch (e) { fallback(); }
+    try { navigator.clipboard.writeText(el.textContent).then(() => { roll($('copy-roll'), 'Copied'); sfx.ding(); setTimeout(() => roll($('copy-roll'), 'Copy'), 1800); }, fallback); } catch (e) { fallback(); }
   });
 
   /* ---------- Octopus rig: four stubby tentacles that rotate about their roots ---------- */
@@ -647,6 +730,15 @@ dialog::backdrop { background: rgba(26,23,20,.7); }
 
   let look = { x: 0, y: 1 }, lookCur = { x: 0, y: 1 };
   const octo = $('octo');
+  // the octopus can't block clicks (pointer-events: none), so hit-test it: a click on it makes it blub and jiggle
+  addEventListener('click', e => {
+    if (e.target.closest(CLICKABLE) || dlg.open) return;
+    const r = octo.getBoundingClientRect();
+    const nx = (e.clientX - (r.left + r.width / 2)) / (r.width * .4), ny = (e.clientY - (r.top + r.height * .42)) / (r.height * .38);
+    if (nx * nx + ny * ny > 1) return;
+    sfx.blub();
+    if (!reduce) octo.firstElementChild.animate([{ transform: 'scale(1,1)' }, { transform: 'scale(1.18,.82)' }, { transform: 'scale(.88,1.14)' }, { transform: 'scale(1.05,.96)' }, { transform: 'scale(1,1)' }], { duration: 500, easing: 'steps(6, jump-end)' });
+  });
   addEventListener('pointermove', e => {
     const r = octo.getBoundingClientRect();
     const dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height * .3);
