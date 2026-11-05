@@ -7,7 +7,7 @@ window.PERSONAL = [
   "tag": "animation",
   "yt": null,
   "cover": [
-   "ink-assets/personal/animation/02.gif",
+   "ink-assets/personal/animation/03.gif",
    1920,
    1080,
    "2026-06-06"
@@ -21,19 +21,20 @@ window.PERSONAL = [
     "poster": "ink-assets/personal/animation/01-poster.jpg",
     "d": "2026-04-13"
    },
+   {
+    "type": "video",
+    "src": "ink-assets/personal/animation/02.mp4",
+    "w": 1280,
+    "h": 720,
+    "poster": "ink-assets/personal/animation/02-poster.jpg",
+    "d": "2026-06-01"
+   },
    [
-    "ink-assets/personal/animation/02.gif",
+    "ink-assets/personal/animation/03.gif",
     1920,
     1080,
     "2026-06-06"
    ],
-   {
-    "type": "video",
-    "src": "ink-assets/personal/animation/03.mp4",
-    "w": 1280,
-    "h": 720,
-    "poster": "ink-assets/personal/animation/03-poster.jpg"
-   },
    {
     "type": "video",
     "src": "ink-assets/personal/animation/04.mp4",
@@ -47,55 +48,48 @@ window.PERSONAL = [
  {
   "id": "original-characters",
   "t": "Original Characters",
-  "y": "2018–26",
+  "y": "2025–26",
   "tag": "illustration",
   "yt": null,
   "cover": [
-   "ink-assets/personal/original-characters/01.jpg",
-   1130,
-   1600
+   "ink-assets/personal/original-characters/01.png",
+   899,
+   1600,
+   "2025-01-31"
   ],
   "media": [
    [
-    "ink-assets/personal/original-characters/01.jpg",
-    1130,
-    1600
+    "ink-assets/personal/original-characters/01.png",
+    899,
+    1600,
+    "2025-01-31"
    ],
    [
     "ink-assets/personal/original-characters/02.jpg",
-    1130,
-    1600
-   ],
-   [
-    "ink-assets/personal/original-characters/03.jpg",
-    1130,
-    1600
-   ],
-   [
-    "ink-assets/personal/original-characters/04.jpg",
-    1130,
-    1600
-   ],
-   [
-    "ink-assets/personal/original-characters/05.jpg",
     1600,
     1131,
     "2025-02-19"
    ],
    [
-    "ink-assets/personal/original-characters/06.jpg",
+    "ink-assets/personal/original-characters/03.jpg",
     1131,
     1600,
     "2025-02-22"
    ],
    [
-    "ink-assets/personal/original-characters/07.jpg",
+    "ink-assets/personal/original-characters/04.jpg",
     1600,
     1131,
     "2025-03-15"
    ],
    [
-    "ink-assets/personal/original-characters/08.jpg",
+    "ink-assets/personal/original-characters/05.png",
+    1131,
+    1600,
+    "2026-02-23"
+   ],
+   [
+    "ink-assets/personal/original-characters/06.jpg",
     1131,
     1600,
     "2026-10-01"
@@ -105,419 +99,180 @@ window.PERSONAL = [
  {
   "id": "commission-work",
   "t": "Commission Work",
-  "y": "2021–24",
+  "y": "2025–26",
   "tag": "illustration",
   "yt": null,
   "cover": [
    "ink-assets/personal/commission-work/01.jpg",
-   1130,
-   1600
+   1131,
+   1600,
+   "2025-06-20"
   ],
   "media": [
    [
     "ink-assets/personal/commission-work/01.jpg",
-    1130,
-    1600
+    1131,
+    1600,
+    "2025-06-20"
    ],
    [
     "ink-assets/personal/commission-work/02.jpg",
-    1130,
-    1600
+    899,
+    1600,
+    "2025-06-23"
    ],
    [
     "ink-assets/personal/commission-work/03.jpg",
-    1130,
-    1600
+    1131,
+    1600,
+    "2025-06-29"
    ],
    [
     "ink-assets/personal/commission-work/04.jpg",
+    899,
     1600,
-    1130
+    "2025-07-13"
    ],
    [
     "ink-assets/personal/commission-work/05.jpg",
     1600,
-    1130
+    1131,
+    "2026-01-20"
    ],
    [
     "ink-assets/personal/commission-work/06.jpg",
     1600,
-    1130
+    1131,
+    "2026-03-12"
    ],
    [
     "ink-assets/personal/commission-work/07.jpg",
     1600,
-    1130
+    1131,
+    "2026-04-20"
    ],
    [
     "ink-assets/personal/commission-work/08.jpg",
     1600,
-    1130
+    908,
+    "2026-06-13"
    ],
    [
     "ink-assets/personal/commission-work/09.jpg",
-    1130,
-    1600
-   ],
-   [
-    "ink-assets/personal/commission-work/10.jpg",
-    1130,
-    1600
-   ],
-   [
-    "ink-assets/personal/commission-work/11.jpg",
-    1130,
-    1600
-   ],
-   [
-    "ink-assets/personal/commission-work/12.jpg",
     1131,
-    1600
-   ],
-   [
-    "ink-assets/personal/commission-work/13.jpg",
-    1130,
-    1600
-   ],
-   [
-    "ink-assets/personal/commission-work/14.jpg",
-    1130,
-    1600
-   ],
-   [
-    "ink-assets/personal/commission-work/15.jpg",
     1600,
-    1130
-   ],
-   [
-    "ink-assets/personal/commission-work/16.jpg",
-    1600,
-    1131
-   ],
-   [
-    "ink-assets/personal/commission-work/17.jpg",
-    1600,
-    1158
-   ],
-   [
-    "ink-assets/personal/commission-work/18.jpg",
-    905,
-    1600
-   ],
-   [
-    "ink-assets/personal/commission-work/19.jpg",
-    1177,
-    1600
-   ],
-   [
-    "ink-assets/personal/commission-work/20.jpg",
-    1130,
-    1600
-   ],
-   [
-    "ink-assets/personal/commission-work/21.jpg",
-    1130,
-    1600
-   ],
-   [
-    "ink-assets/personal/commission-work/22.jpg",
-    1130,
-    1600
-   ],
-   [
-    "ink-assets/personal/commission-work/23.jpg",
-    1130,
-    1600
-   ],
-   [
-    "ink-assets/personal/commission-work/24.jpg",
-    1600,
-    1130
-   ],
-   [
-    "ink-assets/personal/commission-work/25.jpg",
-    1600,
-    1130
-   ],
-   [
-    "ink-assets/personal/commission-work/26.jpg",
-    1600,
-    1130
-   ],
-   [
-    "ink-assets/personal/commission-work/27.jpg",
-    1600,
-    1130
-   ],
-   [
-    "ink-assets/personal/commission-work/28.jpg",
-    1600,
-    1130
-   ],
-   [
-    "ink-assets/personal/commission-work/29.jpg",
-    1600,
-    1130
-   ],
-   [
-    "ink-assets/personal/commission-work/30.jpg",
-    1600,
-    1600
-   ],
-   [
-    "ink-assets/personal/commission-work/31.jpg",
-    1600,
-    1600
-   ],
-   [
-    "ink-assets/personal/commission-work/32.jpg",
-    1600,
-    1600
-   ],
-   [
-    "ink-assets/personal/commission-work/33.jpg",
-    1600,
-    1600
+    "2026-07-11"
    ]
   ]
  },
  {
   "id": "colour-practices",
   "t": "Colour Practices",
-  "y": "2018–22",
+  "y": "2021",
   "tag": "illustration",
   "yt": null,
   "cover": [
    "ink-assets/personal/colour-practices/01.jpg",
-   1567,
-   1600
+   1600,
+   1600,
+   "2021-06-09"
   ],
   "media": [
    [
     "ink-assets/personal/colour-practices/01.jpg",
-    1567,
-    1600
+    1600,
+    1600,
+    "2021-06-09"
    ],
    [
     "ink-assets/personal/colour-practices/02.jpg",
-    1117,
-    1600
+    1600,
+    1600,
+    "2021-06-10"
    ],
    [
     "ink-assets/personal/colour-practices/03.jpg",
-    1152,
-    1600
+    1600,
+    1600,
+    "2021-06-10"
    ],
    [
     "ink-assets/personal/colour-practices/04.jpg",
     1600,
-    1416
-   ],
-   [
-    "ink-assets/personal/colour-practices/05.jpg",
-    986,
-    1600
-   ],
-   [
-    "ink-assets/personal/colour-practices/06.jpg",
-    1288,
-    1600
-   ],
-   [
-    "ink-assets/personal/colour-practices/07.jpg",
     1600,
-    1130
-   ],
-   [
-    "ink-assets/personal/colour-practices/08.jpg",
-    1199,
-    1600
-   ],
-   [
-    "ink-assets/personal/colour-practices/09.jpg",
-    1117,
-    1600
-   ],
-   [
-    "ink-assets/personal/colour-practices/10.jpg",
-    1117,
-    1600
-   ],
-   [
-    "ink-assets/personal/colour-practices/11.jpg",
-    1117,
-    1600
-   ],
-   [
-    "ink-assets/personal/colour-practices/12.jpg",
-    1117,
-    1600
-   ],
-   [
-    "ink-assets/personal/colour-practices/13.jpg",
-    1600,
-    1260
-   ],
-   [
-    "ink-assets/personal/colour-practices/14.jpg",
-    1600,
-    1117
-   ],
-   [
-    "ink-assets/personal/colour-practices/15.jpg",
-    1600,
-    1600
-   ],
-   [
-    "ink-assets/personal/colour-practices/16.jpg",
-    1600,
-    1600
-   ],
-   [
-    "ink-assets/personal/colour-practices/17.jpg",
-    1600,
-    1600
-   ],
-   [
-    "ink-assets/personal/colour-practices/18.jpg",
-    1600,
-    1600
-   ],
-   [
-    "ink-assets/personal/colour-practices/19.jpg",
-    1600,
-    1600
-   ],
-   [
-    "ink-assets/personal/colour-practices/20.jpg",
-    1600,
-    1600
+    "2021-06-11"
    ]
   ]
  },
  {
   "id": "food-illustrations",
   "t": "Food Illustrations",
-  "y": "2018–25",
+  "y": "2025",
   "tag": "illustration",
   "yt": null,
   "cover": [
    "ink-assets/personal/food-illustrations/01.jpg",
-   1130,
-   1600
+   1600,
+   1600,
+   "2025-03-23"
   ],
   "media": [
    [
     "ink-assets/personal/food-illustrations/01.jpg",
-    1130,
-    1600
+    1600,
+    1600,
+    "2025-03-23"
    ],
    [
     "ink-assets/personal/food-illustrations/02.jpg",
-    1130,
-    1600
+    1600,
+    1600,
+    "2025-03-23"
    ],
    [
     "ink-assets/personal/food-illustrations/03.jpg",
     1600,
-    1600
+    1600,
+    "2025-03-23"
    ],
    [
     "ink-assets/personal/food-illustrations/04.jpg",
     1600,
-    1600
+    1600,
+    "2025-03-23"
    ],
    [
     "ink-assets/personal/food-illustrations/05.jpg",
-    1446,
-    1600
+    1600,
+    1600,
+    "2025-03-23"
    ],
    [
     "ink-assets/personal/food-illustrations/06.jpg",
     1600,
-    1600
+    1600,
+    "2025-09-28"
    ],
    [
     "ink-assets/personal/food-illustrations/07.jpg",
-    1454,
-    1600
+    1600,
+    1597,
+    "2025-09-28"
    ],
    [
     "ink-assets/personal/food-illustrations/08.jpg",
     1600,
-    1600
+    1597,
+    "2025-09-28"
    ],
    [
     "ink-assets/personal/food-illustrations/09.jpg",
-    1380,
-    1600
-   ],
-   [
-    "ink-assets/personal/food-illustrations/10.jpg",
-    1600,
-    1600
-   ],
-   [
-    "ink-assets/personal/food-illustrations/11.jpg",
-    1600,
-    1600
-   ],
-   [
-    "ink-assets/personal/food-illustrations/12.jpg",
-    1600,
-    1600,
-    "2025-03-23"
-   ],
-   [
-    "ink-assets/personal/food-illustrations/13.jpg",
-    1600,
-    1600,
-    "2025-03-23"
-   ],
-   [
-    "ink-assets/personal/food-illustrations/14.jpg",
-    1600,
-    1600,
-    "2025-03-23"
-   ],
-   [
-    "ink-assets/personal/food-illustrations/15.jpg",
-    1600,
-    1600,
-    "2025-03-23"
-   ],
-   [
-    "ink-assets/personal/food-illustrations/16.jpg",
-    1600,
-    1600,
-    "2025-03-23"
-   ],
-   [
-    "ink-assets/personal/food-illustrations/17.jpg",
-    1600,
-    1600,
-    "2025-09-28"
-   ],
-   [
-    "ink-assets/personal/food-illustrations/18.jpg",
     1600,
     1597,
     "2025-09-28"
    ],
    [
-    "ink-assets/personal/food-illustrations/19.jpg",
-    1600,
-    1597,
-    "2025-09-28"
-   ],
-   [
-    "ink-assets/personal/food-illustrations/20.jpg",
-    1600,
-    1597,
-    "2025-09-28"
-   ],
-   [
-    "ink-assets/personal/food-illustrations/21.png",
+    "ink-assets/personal/food-illustrations/10.png",
     1600,
     1600,
     "2025-10-01"
