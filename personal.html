@@ -135,6 +135,12 @@ main, footer { position: relative; z-index: 2; }
 /* 2. Work: three film strips */
 .work { position: relative; }
 [data-page="personal"] .work { min-height: calc(100svh - 80px); }
+/* Personal Work: every piece shown on its own, masonry gallery, no pop-up */
+.gallery { columns: 4 240px; column-gap: 18px; }
+.g-item { break-inside: avoid; margin: 0 0 18px; border: 4px solid var(--ink); border-radius: 16px; overflow: hidden; background: var(--card); box-shadow: 5px 5px 0 var(--ink); transition: transform .3s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow .3s cubic-bezier(0.25, 0.8, 0.25, 1); }
+.g-item img, .g-item video { display: block; width: 100%; height: auto; }
+.g-item:hover { transform: translate(-3px, -4px); box-shadow: 9px 10px 0 var(--ink); }
+@media (max-width: 720px) { .gallery { columns: 2; column-gap: 12px; } .g-item { margin-bottom: 12px; border-width: 3px; border-radius: 12px; box-shadow: 3px 3px 0 var(--ink); } }
 .pin { padding-block: 120px 15vh; }
 .work-top { display: flex; align-items: center; justify-content: space-between; gap: 12px 24px; flex-wrap: wrap; margin-bottom: 16px; }
 .sec-title { font-family: var(--f-title); font-size: clamp(52px, 6.4vw, 96px); line-height: 1; color: var(--yellow); -webkit-text-stroke: 4px var(--ink); paint-order: stroke fill; text-shadow: 5px 5px 0 var(--ink); }
@@ -143,6 +149,7 @@ main, footer { position: relative; z-index: 2; }
 .filter:hover { background: var(--sky); }
 .filter[aria-pressed="true"] { background: var(--yellow); transform: translate(3px, 3px); box-shadow: 0 0 0 var(--ink); }
 .filter .n { font-family: var(--f-mono); font-size: 15px; background: var(--ink); color: var(--card); border-radius: 999px; padding: 1px 8px; }
+@media (max-width: 720px) { .filters { flex-wrap: nowrap; overflow-x: auto; max-width: 100%; padding: 2px 6px 8px 2px; scrollbar-width: none; } .filters::-webkit-scrollbar { display: none; } .filter { flex: none; } .work-top { flex-wrap: wrap; } .work-top > * { min-width: 0; } }
 .rows { display: grid; gap: 12px; }
 .row {
   display: flex; gap: 14px; padding: 22px 14px; border-radius: 10px;
@@ -337,6 +344,7 @@ dialog::backdrop { background: rgba(26,23,20,.7); }
           <div class="filters" role="group" aria-label="Filter work" id="filters"></div>
         </div>
         <div class="rows" id="rows"><div class="row"></div><div class="row"></div><div class="row"></div></div>
+        <div class="gallery" id="gallery" hidden></div>
       </div>
     </div>
   </section>
@@ -513,14 +521,35 @@ dialog::backdrop { background: rgba(26,23,20,.7); }
   // from work-data.js: cover = [src, w, h]; media = images [src, w, h] or videos {type, src, w, h, poster}
   const PAGE = document.documentElement.dataset.page || 'home';   // personal.html sets data-page="personal"
   const WORK = (PAGE === 'personal' ? window.PERSONAL : window.WORK) || [];
-  const TAGS = { all: 'All', animation: 'Animation', video: 'Video', design: 'Design', illustration: 'Illustration', coding: 'Coding' };
+  // home: filter by type; personal: filter by collection (counts are pieces, not projects)
+  const TAGS = PAGE === 'personal'
+    ? Object.fromEntries([['all', 'All'], ...WORK.map(w => [w.id, w.t])])
+    : { all: 'All', animation: 'Animation', video: 'Video', design: 'Design', illustration: 'Illustration', coding: 'Coding' };
   const rows = [...document.querySelectorAll('.row')];
   const playIcon = '<svg width="14" height="14" viewBox="0 0 18 18" aria-hidden="true"><path d="M5 3 L15 9 L5 15Z" fill="#1A1714"/></svg>';
   let currentTag = 'all';
   const workSec = $('work');
 
   function sizeWork() {}
+  function renderGallery(tag, animateIn) {
+    currentTag = tag;
+    $('rows').hidden = true;
+    const g = $('gallery'); g.hidden = false; g.innerHTML = '';
+    let n = 0;
+    WORK.filter(w => tag === 'all' || w.id === tag).forEach(w => w.media.forEach(m => {
+      const f = document.createElement('figure');
+      f.className = 'g-item';
+      f.innerHTML = m.type === 'video'
+        ? `<video src="${m.src}" poster="${m.poster}" width="${m.w}" height="${m.h}" controls playsinline preload="none" aria-label="${w.t}"></video>`
+        : `<img src="${m[0]}" width="${m[1]}" height="${m[2]}" alt="${w.t}" loading="lazy" decoding="async">`;
+      g.appendChild(f);
+      if (animateIn && !reduce && n < 16) f.animate([{ opacity: 0, transform: 'translateY(16px) scale(.96)' }, { opacity: 1, transform: 'none' }],
+        { duration: 420, delay: n * 40, easing: 'cubic-bezier(0.25, 0.8, 0.25, 1)', fill: 'backwards' });
+      n++;
+    }));
+  }
   function render(tag, animateIn) {
+    if (PAGE === 'personal') return renderGallery(tag, animateIn);
     currentTag = tag;
     const list = WORK.filter(w => tag === 'all' || w.tag === tag);
     // split the list into up to three rows of near-equal length, in order
@@ -547,7 +576,9 @@ dialog::backdrop { background: rgba(26,23,20,.7); }
   }
   const filters = $('filters');
   filters.innerHTML = Object.entries(TAGS).map(([k, l]) => {
-    const n = k === 'all' ? WORK.length : WORK.filter(w => w.tag === k).length;
+    const n = PAGE === 'personal'
+      ? (k === 'all' ? WORK.reduce((a, w) => a + w.media.length, 0) : WORK.find(w => w.id === k).media.length)
+      : (k === 'all' ? WORK.length : WORK.filter(w => w.tag === k).length);
     if (!n) return '';
     return `<button class="filter" type="button" id="f-${k}" data-k="${k}" aria-pressed="${k === 'all'}">${l}<span class="n">${n}</span></button>`;
   }).join('');
