@@ -66,6 +66,7 @@ button { font: inherit; color: inherit; }
 #iris { position: fixed; inset: 0; z-index: 7; pointer-events: none; }
 /* old TV / LED screen: subpixel mask + scanlines, soft blur and RGB fringe only at the edges, rounded tube corners */
 .grain { position: fixed; inset: -50%; z-index: 11; pointer-events: none; opacity: .06; mix-blend-mode: multiply; }
+.dust { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 11; pointer-events: none; }
 .crt-edge { position: fixed; inset: 0; z-index: 11; pointer-events: none; -webkit-backdrop-filter: blur(1.6px); backdrop-filter: blur(1.6px);
   -webkit-mask-image: radial-gradient(ellipse 72% 68% at 50% 50%, transparent 70%, #000 100%); mask-image: radial-gradient(ellipse 72% 68% at 50% 50%, transparent 70%, #000 100%); }
 .crt-fringe { position: fixed; inset: 0; z-index: 11; pointer-events: none; mix-blend-mode: screen;
@@ -266,6 +267,7 @@ dialog::backdrop { background: rgba(26,23,20,.7); }
 
 <div id="iris" aria-hidden="true" hidden></div>
 <div class="grain" id="grain" aria-hidden="true"></div>
+<canvas class="dust" id="dust" aria-hidden="true"></canvas>
 <div class="crt-edge" aria-hidden="true"></div>
 <div class="crt-mask" aria-hidden="true"></div>
 <div class="crt-roll" aria-hidden="true"></div>
@@ -508,6 +510,43 @@ dialog::backdrop { background: rgba(26,23,20,.7); }
     if (el.matches('#sound-btn, .panel, .filter, .proj-btn, .nav-btn, .dot, #dlg-close, #copy-email')) return;
     sfx.pop();
   });
+
+  /* ---------- Old-film dust: one-frame specks, hairs and the odd scratch ---------- */
+  const dust = $('dust'), dx = dust.getContext('2d');
+  const sizeDust = () => { dust.width = innerWidth; dust.height = innerHeight; };
+  sizeDust(); addEventListener('resize', sizeDust);
+  let scratch = null;
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  function speck(x, y, r, white) {
+    dx.fillStyle = white ? `rgba(255,253,245,${rnd(.55, .9).toFixed(2)})` : `rgba(20,16,12,${rnd(.45, .85).toFixed(2)})`;
+    dx.beginPath(); dx.ellipse(x, y, r, r * rnd(.45, 1), rnd(0, Math.PI), 0, Math.PI * 2); dx.fill();
+  }
+  function drawDust() {
+    const W = dust.width, H = dust.height;
+    dx.clearRect(0, 0, W, H);
+    // specks: most frames have a few, some have none
+    const n = Math.random() < .3 ? 0 : 1 + Math.floor(Math.random() * 5);
+    for (let i = 0; i < n; i++) {
+      const x = rnd(0, W), y = rnd(0, H), r = .8 + Math.pow(Math.random(), 3) * 4.5, white = Math.random() < .45;
+      speck(x, y, r, white);
+      if (Math.random() < .25) for (let k = 0; k < 3; k++) speck(x + rnd(-9, 9), y + rnd(-9, 9), r * rnd(.3, .6), white);
+    }
+    // a stray hair now and then
+    if (Math.random() < .05) {
+      const x = rnd(0, W), y = rnd(0, H), L = rnd(25, 80), a = rnd(0, Math.PI * 2);
+      dx.strokeStyle = Math.random() < .5 ? 'rgba(20,16,12,.6)' : 'rgba(255,253,245,.7)'; dx.lineWidth = rnd(.8, 1.6);
+      dx.beginPath(); dx.moveTo(x, y);
+      dx.quadraticCurveTo(x + Math.cos(a + 1) * L * .6, y + Math.sin(a + 1) * L * .6, x + Math.cos(a) * L, y + Math.sin(a) * L); dx.stroke();
+    }
+    // a thin vertical scratch that lingers for a few frames
+    if (!scratch && Math.random() < .025) scratch = { x: rnd(W * .05, W * .95), life: Math.floor(rnd(3, 12)), white: Math.random() < .6 };
+    if (scratch) {
+      scratch.x += rnd(-1.5, 1.5);
+      dx.strokeStyle = scratch.white ? 'rgba(255,253,245,.35)' : 'rgba(20,16,12,.3)'; dx.lineWidth = rnd(.8, 1.4);
+      dx.beginPath(); dx.moveTo(scratch.x, 0); dx.lineTo(scratch.x + rnd(-3, 3), H); dx.stroke();
+      if (--scratch.life <= 0) scratch = null;
+    }
+  }
 
   const TICK = 1000 / 12;          // animate "on twos"
   const BEAT = 500;                // 120 BPM
@@ -830,6 +869,7 @@ dialog::backdrop { background: rgba(26,23,20,.7); }
 
     // on twos: character, line boil, grain, flicker
     if (newTick && !reduce) {
+      drawDust();
       lastTick = tick;
       drawLobes(TICK / 1000, poseParams(t.pose));
       drawBubbles(tick);
