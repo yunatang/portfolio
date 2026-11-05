@@ -97,6 +97,7 @@ main, footer { position: relative; z-index: 2; }
 .sound-btn[aria-pressed="false"] .on { display: none; }
 .sound-btn[aria-pressed="false"] .off { display: inline; }
 @media (max-width: 560px) { .sound-btn { width: 38px; height: 38px; } }
+@media (max-width: 480px) { .logo { display: none; } .nav .wrap { justify-content: flex-end; } }
 @media (max-width: 560px) { .logo { font-size: 20px; padding: 2px 12px 3px; } .nav ul { gap: 5px; } .nav ul a { padding: 5px 10px; font-size: 15px; } }
 .reel-tag { position: fixed; z-index: 9; left: max(20px, env(safe-area-inset-left, 0px)); bottom: calc(18px + env(safe-area-inset-bottom, 0px)); display: flex; align-items: center; gap: 10px; background: var(--ink); color: var(--paper); border-radius: 999px; padding: 6px 16px 6px 6px; font-family: var(--f-deco); font-size: 17px; }
 .reel-tag svg { animation: none; }
@@ -109,6 +110,7 @@ main, footer { position: relative; z-index: 2; }
 
 /* 1. Title card (pinned; iris closes at the end) */
 .hero { height: 230svh; }
+@media (max-width: 720px) { .hero { height: auto; } .hero-pin { position: relative; min-height: 100svh; height: auto; padding-bottom: 40px; } }
 .hero-pin { position: sticky; top: 0; height: 100svh; overflow: hidden; display: grid; place-items: center; }
 .rays { position: absolute; left: 50%; top: 58%; width: 260vmax; height: 260vmax; margin: -130vmax 0 0 -130vmax; background: repeating-conic-gradient(from 0deg, rgba(251,133,0,.16) 0 7.5deg, transparent 7.5deg 15deg); animation: spin 60s steps(360) infinite; }
 .title-card { position: relative; text-align: center; padding-block: 88px 0; display: grid; justify-items: center; }
@@ -121,7 +123,12 @@ main, footer { position: relative; z-index: 2; }
 .ribbon svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .ribbon span { position: relative; font-family: var(--f-deco); font-size: clamp(20px, 2.4vw, 30px); color: var(--card); letter-spacing: .06em; padding-bottom: 6px; }
 #stage-spot { width: 1px; height: clamp(200px, 30svh, 300px); }
-@media (max-width: 560px) { .title { white-space: normal; } .ribbon { padding-inline: 44px; } }
+.title .w { display: inline-block; white-space: nowrap; }
+@media (max-width: 720px) {
+  .title { white-space: normal; font-size: clamp(76px, 25vw, 140px); line-height: .9; }
+  .title .w { display: block; }
+}
+@media (max-width: 560px) { .ribbon { padding-inline: 44px; } }
 
 /* 2. Work: three film strips */
 .work { position: relative; }
@@ -553,7 +560,7 @@ dialog::backdrop { background: rgba(26,23,20,.7); }
 
   /* ---------- Bouncing title letters ---------- */
   const tt = $('title-text');
-  tt.innerHTML = [...tt.textContent].map(ch => ch === ' ' ? ' ' : `<span class="l" aria-hidden="true">${ch}</span>`).join('');
+  tt.innerHTML = tt.textContent.trim().split(/\s+/).map(w => `<span class="w">${[...w].map(ch => `<span class="l" aria-hidden="true">${ch}</span>`).join('')}</span>`).join(' ');
 
   /* ---------- Film grain tile ---------- */
   (function () {
@@ -641,9 +648,9 @@ dialog::backdrop { background: rgba(26,23,20,.7); }
     $('proj-prev').hidden = $('proj-next').hidden = shown.length < 2;
     if (!dlg.open) {
       dlg.showModal ? dlg.showModal() : dlg.setAttribute('open', '');
-      if (!reduce) dlg.animate([{ transform: 'scale(.6, 1.2)' }, { transform: 'scale(1.08, .94)' }, { transform: 'scale(1)' }], { duration: 360, easing: 'steps(5, jump-end)' });
+      if (!reduce) dlg.animate([{ transform: 'translateY(16px) scale(.94)', opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 320, easing: 'cubic-bezier(0.25, 0.8, 0.25, 1)' });
     } else if (!reduce && dir) {
-      $('dlg-box').animate([{ transform: `translateX(${dir * 60}px) rotate(${dir * 1.5}deg)`, opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 300, easing: 'steps(4, jump-end)' });
+      $('dlg-box').animate([{ transform: `translateX(${dir * 36}px)`, opacity: 0 }, { transform: 'none', opacity: 1 }], { duration: 280, easing: 'cubic-bezier(0.25, 0.8, 0.25, 1)' });
     }
     sizeFigs(); syncViewer();
   }
@@ -842,7 +849,9 @@ dialog::backdrop { background: rgba(26,23,20,.7); }
     const heroEnd = S.title.offsetTop + S.title.offsetHeight - vh;
     const R = Math.hypot(vw, vh);
     let r, cx = pos.x, cy = pos.y - 30 * pos.s;
-    if (scrollY <= heroEnd) {
+    if (vw < 720) {
+      r = R + 10;   // phones: no iris blackout
+    } else if (scrollY <= heroEnd) {
       const hp = localP(S.title, true);
       r = lerp(R + 10, 0, smooth(clamp((hp - 0.4) / 0.5)));
     } else {
